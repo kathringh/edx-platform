@@ -550,7 +550,7 @@ class CapaModule(CapaFields, XModule):
             result = handlers[dispatch](data)
         except Exception as err:
             _, _, traceback_obj = sys.exc_info()
-            raise ProcessingError(err.message, traceback_obj)
+            raise ProcessingError, (err.message, err), traceback_obj
 
         after = self.get_progress()
 

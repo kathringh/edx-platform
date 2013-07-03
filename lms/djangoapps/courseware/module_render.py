@@ -510,9 +510,14 @@ def modx_dispatch(request, dispatch, location, course_id):
         raise Http404
 
     # For XModule-specific errors, we respond with 400
-    except ProcessingError:
+    except ProcessingError as err:
         log.warning("Module encountered an error while prcessing AJAX call",
                     exc_info=True)
+        # checks that this only returns this message for NotFoundErrors in capa_module
+        if type(err.args[1]) is NotFoundError:
+            return HttpResponse(json.dumps({
+                'success': "The state of this problem has changed since you loaded this page. Please refresh your page."
+            }))
         return HttpResponseBadRequest()
 
     # If any other error occurred, re-raise it to trigger a 500 response
