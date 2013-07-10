@@ -16,13 +16,12 @@ DEBUG = True
 # Disable warnings for acceptance tests, to make the logs readable
 import logging
 logging.disable(logging.ERROR)
-import random
 import os
+import random
 
 
 def seed():
     return os.getppid()
-
 
 MODULESTORE_OPTIONS = {
     'default_class': 'xmodule.raw_module.RawDescriptor',
