@@ -2,7 +2,7 @@
 #pylint: disable=W0621
 
 from lettuce import world, step
-from nose.tools import assert_false, assert_equal, assert_regexp_matches, assert_true
+from nose.tools import assert_false, assert_equal, assert_regexp_matches
 from common import type_in_codemirror
 
 KEY_CSS = '.key input.policy-key'

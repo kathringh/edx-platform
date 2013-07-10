@@ -70,24 +70,24 @@ def css_click(css_selector, index=0, max_attempts=5, success_condition=lambda: T
     This function will return True if the click worked (taking into account both errors and the optional
     success_condition).
     """
-    assert is_css_present(css_selector)
-    attempt = 0
-    result = False
-    while attempt < max_attempts:
+    assert is_css_present(css_selector), "{} is not present".format(css_selector)
+    for _ in range(max_attempts):
         try:
             world.css_find(css_selector)[index].click()
             if success_condition():
-                result = True
-                break
+                return
         except WebDriverException:
             # Occasionally, MathJax or other JavaScript can cover up
             # an element temporarily.
             # If this happens, wait a second, then try again
             world.wait(1)
-            attempt += 1
         except:
-            attempt += 1
-    assert_true(result, 'Clicking {} did not work as expected'.format(css_selector))
+            pass
+    else:
+        # try once more, letting exceptions raise
+        world.css_find(css_selector)[index].click()
+        if not success_condition():
+            raise Exception("unsuccessful click")
 
 
 @world.absorb
@@ -102,24 +102,24 @@ def css_check(css_selector, index=0, max_attempts=5, success_condition=lambda: T
     This function will return True if the check worked (taking into account both errors and the optional
     success_condition).
     """
-    assert is_css_present(css_selector)
-    attempt = 0
-    result = False
-    while attempt < max_attempts:
+    assert is_css_present(css_selector), "{} is not present".format(css_selector)
+    for _ in range(max_attempts):
         try:
             world.css_find(css_selector)[index].check()
             if success_condition():
-                result = True
-                break
+                return
         except WebDriverException:
             # Occasionally, MathJax or other JavaScript can cover up
             # an element temporarily.
             # If this happens, wait a second, then try again
             world.wait(1)
-            attempt += 1
         except:
-            attempt += 1
-    assert_true(result, 'Clicking {} did not work as expected'.format(css_selector))
+            pass
+    else:
+        # try once more, letting exceptions raise
+        world.css_find(css_selector)[index].check()
+        if not success_condition():
+            raise Exception("unsuccessful check")
 
 
 @world.absorb
@@ -255,6 +255,7 @@ def css_visible(css_selector, index=0, max_attempts=5):
     assert_true(attempt < max_attempts, 'Ran out of attempts to access {}'.format(css_selector))
 
 
+
 @world.absorb
 def dialogs_closed():
     def are_dialogs_closed(_driver):
@@ -270,10 +271,16 @@ def dialogs_closed():
 def save_the_html(path='/tmp'):
     url = world.browser.url
     html = world.browser.html.encode('ascii', 'ignore')
-    filename = '%s.html' % quote_plus(url)
-    file = open('%s/%s' % (path, filename), 'w')
-    file.write(html)
-    file.close()
+    filename = "{path}/{name}.html".format(path=path, name=quote_plus(url))
+    with open(filename, "w") as f:
+        f.write(html)
+
+
+@world.absorb
+def click_course_content():
+    course_content_css = 'li.nav-course-courseware'
+    if world.browser.is_element_present_by_css(course_content_css):
+        world.css_click(course_content_css)
 
 
 @world.absorb
