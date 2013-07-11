@@ -29,6 +29,7 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
         this.$el.find('#timezone').html("(" + dateIntrospect.getTimezone() + ")");
 
         this.listenTo(this.model, 'invalid', this.handleValidationError);
+        this.listenTo(this.model, 'change', this.showNotificationBar);
         this.selectorToField = _.invert(this.fieldToSelectorMap);
     },
 
@@ -141,9 +142,6 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
         default: // Everything else is handled by datepickers and CodeMirror.
             break;
         }
-        this.showNotificationBar(this.save_message,
-                                 _.bind(this.saveView, this),
-                                 _.bind(this.revertView, this));
     },
 
     removeVideo: function(event) {
@@ -153,9 +151,6 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
             this.$el.find(".current-course-introduction-video iframe").attr("src", "");
             this.$el.find('#' + this.fieldToSelectorMap['intro_video']).val("");
             this.$el.find('.remove-course-introduction-video').hide();
-            this.showNotificationBar(this.save_message,
-                                     _.bind(this.saveView, this),
-                                     _.bind(this.revertView, this));
         }
     },
     codeMirrors : {},
@@ -179,9 +174,6 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
                     var newVal = mirror.getValue();
                     if (cachethis.model.get(field) != newVal) {
                         cachethis.setAndValidate(field, newVal);
-                        cachethis.showNotificationBar(cachethis.save_message,
-                                                      _.bind(cachethis.saveView, cachethis),
-                                                      _.bind(cachethis.revertView, cachethis));
                     }
                 }
             });
@@ -202,7 +194,8 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
                            mirror.setValue(self.model.get(field));
                        });
             },
-            reset: true});
+            reset: true,
+            silent: true});
     },
     setAndValidate: function(attr, value) {
         // If we call model.set() with {validate: true}, model fields
@@ -213,6 +206,15 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
         // call validate ourselves.
         this.model.set(attr, value);
         this.model.isValid();
+    },
+
+    showNotificationBar: function() {
+        // We always call showNotificationBar with the same args, just
+        // delegate to superclass
+        CMS.Views.ValidatingView.prototype.showNotificationBar.call(this,
+                                                                    this.save_message,
+                                                                    _.bind(this.saveView, this),
+                                                                    _.bind(this.revertView, this));
     }
 });
 
