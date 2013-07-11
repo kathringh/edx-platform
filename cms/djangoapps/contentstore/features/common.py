@@ -68,7 +68,7 @@ def press_the_notification_button(_step, name):
         error_showing = world.is_css_present('.is-shown.wrapper-notification-error')
         return confirmation_dismissed or error_showing
 
-    assert_true(world.css_click(css, success_condition=button_clicked), '%s button not clicked after 5 attempts.' % name)
+    world.css_click(css, success_condition=button_clicked), '%s button not clicked after 5 attempts.' % name
 
 
 @step('I change the "(.*)" field to "(.*)"$')
