@@ -8,8 +8,6 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
         // Leaving change in as fallback for older browsers
         "change input" : "updateModel",
         "change textarea" : "updateModel",
-        'click .remove-course-syllabus' : "removeSyllabus",
-        'click .new-course-syllabus' : 'assetSyllabus',
         'click .remove-course-introduction-video' : "removeVideo",
         'focus #course-overview' : "codeMirrorize",
         'mouseover #timezone' : "updateTime",
@@ -40,18 +38,6 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
         this.setupDatePicker('enrollment_start');
         this.setupDatePicker('enrollment_end');
 
-        if (this.model.has('syllabus')) {
-            this.$el.find(this.fieldToSelectorMap['syllabus']).html(
-                    this.fileAnchorTemplate({
-                        fullpath : this.model.get('syllabus'),
-                        filename: 'syllabus'}));
-            this.$el.find('.remove-course-syllabus').show();
-        }
-        else {
-            this.$el.find('#' + this.fieldToSelectorMap['syllabus']).html("");
-            this.$el.find('.remove-course-syllabus').hide();
-        }
-
         this.$el.find('#' + this.fieldToSelectorMap['overview']).val(this.model.get('overview'));
         this.codeMirrorize(null, $('#course-overview')[0]);
 
@@ -71,7 +57,6 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
         'end_date' : 'course-end',
         'enrollment_start' : 'enrollment-start',
         'enrollment_end' : 'enrollment-end',
-        'syllabus' : '.current-course-syllabus .doc-filename',
         'overview' : 'course-overview',
         'intro_video' : 'course-introduction-video',
         'effort' : "course-effort"
@@ -159,14 +144,6 @@ CMS.Views.Settings.Details = CMS.Views.ValidatingView.extend({
         this.showNotificationBar(this.save_message,
                                  _.bind(this.saveView, this),
                                  _.bind(this.revertView, this));
-    },
-
-    removeSyllabus: function() {
-        if (this.model.has('syllabus'))	this.setAndValidate('syllabus', null);
-    },
-
-    assetSyllabus : function() {
-        // TODO implement
     },
 
     removeVideo: function(event) {
