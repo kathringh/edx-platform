@@ -77,7 +77,7 @@ CMS.Models.Settings.CourseGrader = Backbone.Model.extend({
             }
             else {
                 // FIXME somehow this.collection is unbound sometimes. I can't track down when
-                var existing = this.collection && this.collection.some(function(other) { return (other != this) && (other.get('type') == attrs['type']);}, this);
+                var existing = this.collection && this.collection.some(function(other) { return (other.cid != this.cid) && (other.get('type') == attrs['type']);}, this);
                 if (existing) {
                     errors.type = "There's already another assignment type with this name.";
                 }
