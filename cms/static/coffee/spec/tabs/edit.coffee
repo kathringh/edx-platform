@@ -3,7 +3,7 @@ describe "TabsEditorDescriptor", ->
     @isInactiveClass = "is-inactive"
     @isCurrent = "current"
     loadFixtures 'tabs-edit.html'
-    @descriptor = new window.TabsEditorDescriptor($('.editor-with-tabs'))
+    @descriptor = new window.TabsEditorDescriptor($('.base_wrapper'))
     window.TabsEditorDescriptor['tabs_save_functions'] = {}
     @html_id = 'test_id'
     window.TabsEditorDescriptor['tabs_save_functions'][@html_id] = {}
@@ -56,7 +56,6 @@ describe "TabsEditorDescriptor", ->
 
       editBox.data('CodeMirror', CodeMirrorStub)
       data = @descriptor.save().data
-      console.log 'data=', data
       expect(data).toEqual('Advanced Editor Text')
 
     it "detach click event", ->
@@ -82,14 +81,28 @@ describe "TabsEditorDescriptor", ->
   describe "edit header properly hidden", ->
     it "hide header is True", ->
       waitsFor () ->
-        if ($('.editor-with-tabs').data('hide-header') is 'True')
-          # expect($.fn.hide).toHaveBeenCalled()
-          if ($(".component-edit-header").css('display') is 'none')
+        if (@descriptor.element.find('section.editor-with-tabs').data('hide-header') is 'True')
+          if (@descriptor.element.find(".component-edit-header").css('display') is 'none')
             return true
         else
-          if ($(".component-edit-header").css('display') isnt 'none')
+          if (@descriptor.element.find(".component-edit-header").css('display') isnt 'none')
             return true;
         return false;
       , "Timeout for header show/hide", 750
-    
 
+  describe "Settings tab", ->
+    it "Clicking on Settings tab switches to settings", ->
+
+      settingsEditor = @descriptor.element.find('.wrapper-comp-settings')
+      editorModeButton =  @descriptor.element.find('#editor-mode').find("a")
+      settingsModeButton = @descriptor.element.find('#settings-mode').find("a")
+
+      console.log @descriptor
+      @descriptor.element.find('#settings-mode').find('a').trigger('click')
+
+      expect(settingsEditor.hasClass('is-active')).toBe(true)
+
+      expect(settingsModeButton.hasClass('is-set')).toBe(true)
+      expect(editorModeButton.hasClass('is-set')).toBe(false)
+
+      expect(@descriptor.element.find('.launch-latex-compiler').css('display')).toBe('none')
